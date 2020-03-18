@@ -1,0 +1,103 @@
+<style>
+/*Скрываем лишние пункты*/
+  .hidden__custom {
+    display: none;
+}  
+</style>
+
+<script>
+
+$(document).ready(function () {
+    console.log('wow');
+    //Добавляем классы для скрытия к нужным пунктам
+    $(".t706 .t-input-group_in").addClass("clientadr");
+    $(".t706 .t-input-group_pm").addClass("paymentmethod");
+    $(".clientadr .t-input-block input").addClass("clientadr__input");
+    $(".t-radio__wrapper-payment .t-radio__control:eq(0)").addClass("cashondelivery__radio");
+    $(".t-radio__wrapper-payment .t-radio:eq(0)").addClass("cashondelivery__check");
+    
+    $(".t-radio__wrapper-payment .t-radio__control:eq(1)").addClass("paybycard__radio");
+    $(".t-radio__wrapper-payment .t-radio:eq(1)").addClass("paybycard__check");
+    
+    $(".t-radio__wrapper-delivery .t-radio:eq(0)").addClass("deliverby__samovyvoz");
+    $(".t-radio__wrapper-delivery .t-radio:eq(4)").addClass("deliverby__russianpost__russia");
+    $(".t-radio__wrapper-delivery .t-radio:eq(2)").addClass("deliverby__cdek__russia");
+    
+    //Функция скрытия всех блоков
+    function hideDefault() {
+        $(".hidden__custom").css("display", "none");
+    };
+    
+    function iv_disablePayByCash() {
+        //$(".t-radio__wrapper-payment .t-radio:eq(1) input").prop('checked', true);
+        //$(".t-radio__wrapper-payment .t-radio:eq(1)").attr('checked', "checked");
+        //$(".clientadr .t-input-block input").attr("data-tilda-req", "1");
+        //----------------
+        //$(".paybycard__check").prop('checked');
+        //$(".cashondelivery__check").removeAttr('checked');
+        //$(".paybycard__check").attr('checked', "checked");
+        
+        $(".paybycard__check").prop('checked');
+        $(".paybycard__check").trigger('change');
+        $(".paybycard__check").click();
+        $(".cashondelivery__radio").addClass("hidden__custom");
+        hideDefault();
+        console.log('iv_disablePayByCash: disabled cash on delivery option');
+    };
+    
+    function iv_enablePayByCash() {
+        $(".cashondelivery__radio").show();
+        console.log('iv_enablePayByCash: cash on delivery option shown');
+    };
+    
+    function iv_addressNotRequiredAndHidden() {
+        $(".clientadr__input").attr("data-tilda-req", "0");
+        $(".clientadr").addClass("hidden__custom");
+        hideDefault();
+        console.log('iv_addressNotRequiredAndHidden: removed address option');
+    };
+    
+    function iv_addressRequiredAndShown() {
+        $(".clientadr").show();
+        $(".clientadr__input").attr("data-tilda-req", "1");
+        console.log('iv_addressRequiredAndShown');
+    };
+    //Если выбрали доставку по России - только оплата картой, опцию с налом скроем
+    if ($(".t-radio__wrapper-delivery .t-radio:eq(4)").prop('checked') 
+    || $(".t-radio__wrapper-delivery .t-radio:eq(2)").prop('checked')) {
+        hideDefault();
+        iv_disablePayByCash();
+        iv_addressRequiredAndShown();
+    } else if  ($("deliverby__samovyvoz").prop('checked') ) {
+        // самовывоз - адрес можно не вводить
+        iv_addressNotRequiredAndHidden();
+        iv_enablePayByCash();
+        console.log('removed address option');
+    }
+
+    //При переключении переключателей доставки
+    $(".t-radio__wrapper-delivery").change(function () {
+        //Скрываем определённые поля   
+         hideDefault();
+
+        //Если выбрали доставку по России - только оплата картой, опцию с налом скроем
+        if ($(".deliverby__cdek__russia").prop('checked') 
+        || $(".deliverby__russianpost__russia").prop('checked')) {
+            hideDefault();
+            iv_disablePayByCash();
+            iv_addressRequiredAndShown();
+        }  else if ($(".t-radio__wrapper-delivery .t-radio:eq(0)").prop('checked') ) {
+            // самовывоз - адрес можно не вводить
+            iv_addressNotRequiredAndHidden();
+            iv_enablePayByCash();
+            console.log('disabled cash on delivery option');
+        }
+        else {
+            iv_enablePayByCash();
+            iv_addressRequiredAndShown();
+            console.log('enabled cash on delivery option');
+        }
+});
+
+});
+</script>
